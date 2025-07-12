@@ -9,6 +9,7 @@ type Session struct {
 	SourcePrompt string      `json:"source_prompt"`
 	Request      interface{} `json:"request"`
 	Response     interface{} `json:"response"`
+	Stream       bool        `json:"stream"`
 	Metadata     Metadata    `json:"metadata"`
 }
 
