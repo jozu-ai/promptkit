@@ -1,7 +1,7 @@
-package main
+package daemon
 
 import (
-	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -11,28 +11,22 @@ import (
 	"github.com/promptkit/promptkit/pkg/session"
 )
 
-func main() {
-	var (
-		addr    = flag.String("addr", ":8080", "listen address")
-		backend = flag.String("backend", "https://api.openai.com", "backend base URL")
-		logFile = flag.String("log", "sessions.jsonl", "session log file")
-	)
-	flag.Parse()
-
-	rec, err := recorder.New(*logFile)
+// Run starts the promptkit daemon and blocks until the HTTP server exits.
+func Run(addr, backend, logFile string) error {
+	rec, err := recorder.New(logFile)
 	if err != nil {
-		log.Fatalf("recorder: %v", err)
+		return fmt.Errorf("recorder: %w", err)
 	}
 	defer rec.Close()
 
-	proxy, err := proxy.New(*backend)
+	rp, err := proxy.New(backend)
 	if err != nil {
-		log.Fatalf("proxy: %v", err)
+		return fmt.Errorf("proxy: %w", err)
 	}
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		proxy.ServeHTTP(w, r)
+		rp.ServeHTTP(w, r)
 		sess := session.Session{
 			ID:       time.Now().Format("20060102150405"),
 			Origin:   "manual",
@@ -48,8 +42,6 @@ func main() {
 		}
 	})
 
-	log.Printf("promptkitd listening on %s", *addr)
-	if err := http.ListenAndServe(*addr, handler); err != nil {
-		log.Fatal(err)
-	}
+	log.Printf("promptkit listening on %s", addr)
+	return http.ListenAndServe(addr, handler)
 }
