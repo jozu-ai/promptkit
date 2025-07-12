@@ -19,7 +19,6 @@ func main() {
 				Flags: []cli.Flag{
 					&cli.StringFlag{Name: "addr", Value: ":8080", Usage: "listen address"},
 					&cli.StringFlag{Name: "backend", Value: "https://api.openai.com", Usage: "backend base URL"},
-					&cli.StringFlag{Name: "log", Value: "sessions.jsonl", Usage: "session log file"},
 				},
 				Action: startDaemon,
 			},
@@ -34,6 +33,5 @@ func main() {
 func startDaemon(c *cli.Context) error {
 	addr := c.String("addr")
 	backend := c.String("backend")
-	logFile := c.String("log")
-	return daemon.Run(addr, backend, logFile)
+	return daemon.Run(addr, backend)
 }
