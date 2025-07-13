@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 
+	"github.com/promptkit/promptkit/internal/appdir"
 	"github.com/promptkit/promptkit/internal/daemon"
+	"github.com/promptkit/promptkit/internal/list"
 	cli "github.com/urfave/cli/v2"
 )
 
@@ -22,6 +25,17 @@ func main() {
 				},
 				Action: startDaemon,
 			},
+			{
+				Name:        "list",
+				Usage:       "list recorded sessions",
+				Description: `List prompt sessions stored locally. The --filter flag accepts expressions like 'request.model=gpt-4', 'origin=modelkit', 'metadata.tags~qa', 'metadata.published!=null', 'metadata.timestamp>2025-07-01T00:00:00Z' or 'metadata.latency_ms<1000'.`,
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "filter", Usage: "query expression using = != ~ < >, e.g. 'metadata.tags~qa'"},
+					&cli.IntFlag{Name: "limit", Usage: "max results"},
+					&cli.StringFlag{Name: "output", Value: "table", Usage: "output format (table|json)"},
+				},
+				Action: listCmd,
+			},
 		},
 	}
 
@@ -34,4 +48,42 @@ func startDaemon(c *cli.Context) error {
 	addr := c.String("addr")
 	backend := c.String("backend")
 	return daemon.Run(addr, backend)
+}
+
+func listCmd(c *cli.Context) error {
+	dir, err := appdir.SessionsDir()
+	if err != nil {
+		return err
+	}
+
+	sessions, err := list.LoadSessions(dir)
+	if err != nil {
+		return err
+	}
+
+	pred, err := list.ParseFilter(c.String("filter"))
+	if err != nil {
+		return err
+	}
+
+	var summaries []list.Summary
+	for _, s := range sessions {
+		smap := list.ToMap(s)
+		if pred(smap) {
+			summaries = append(summaries, list.Summarize(s))
+		}
+	}
+
+	if limit := c.Int("limit"); limit > 0 && limit < len(summaries) {
+		summaries = summaries[:limit]
+	}
+
+	if c.String("output") == "json" {
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", "  ")
+		return enc.Encode(summaries)
+	}
+
+	list.PrintTable(summaries)
+	return nil
 }
