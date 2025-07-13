@@ -2,12 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/promptkit/promptkit/internal/appdir"
 	"github.com/promptkit/promptkit/internal/daemon"
 	"github.com/promptkit/promptkit/internal/list"
+	"github.com/promptkit/promptkit/internal/view"
 	cli "github.com/urfave/cli/v2"
 )
 
@@ -35,6 +37,12 @@ func main() {
 					&cli.StringFlag{Name: "output", Value: "table", Usage: "output format (table|json)"},
 				},
 				Action: listCmd,
+			},
+			{
+				Name:      "view",
+				Usage:     "view session details",
+				ArgsUsage: "<session-id>",
+				Action:    viewCmd,
 			},
 		},
 	}
@@ -86,4 +94,26 @@ func listCmd(c *cli.Context) error {
 
 	list.PrintTable(summaries)
 	return nil
+}
+
+func viewCmd(c *cli.Context) error {
+	if c.NArg() < 1 {
+		return cli.Exit("session id required", 1)
+	}
+	id := c.Args().First()
+	dir, err := appdir.SessionsDir()
+	if err != nil {
+		return err
+	}
+	sess, err := view.FindSession(dir, id)
+	if err != nil {
+		return err
+	}
+	if sess == nil {
+		fmt.Fprintf(os.Stderr, "❌ session '%s' not found\n", id)
+		return cli.Exit("", 1)
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	return enc.Encode(sess)
 }
