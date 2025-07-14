@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/promptkit/promptkit/internal/appdir"
+	"github.com/promptkit/promptkit/internal/control"
 	"github.com/promptkit/promptkit/internal/daemon"
 	"github.com/promptkit/promptkit/internal/list"
 	"github.com/promptkit/promptkit/internal/view"
@@ -26,6 +27,11 @@ func main() {
 					&cli.StringFlag{Name: "backend", Value: "https://api.openai.com", Usage: "backend base URL"},
 				},
 				Action: startDaemon,
+			},
+			{
+				Name:   "ui",
+				Usage:  "launch UI and control server",
+				Action: uiCmd,
 			},
 			{
 				Name:        "list",
@@ -116,4 +122,22 @@ func viewCmd(c *cli.Context) error {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(sess)
+}
+
+func uiCmd(c *cli.Context) error {
+	addr := "localhost:5140"
+	srv, err := control.NewServer(addr)
+	if err != nil {
+		return err
+	}
+
+	if err := srv.Start(); err != nil {
+		return err
+	}
+
+	fmt.Println("🚀 Starting PromptKit control server on http://" + addr)
+	fmt.Println("✅ Control server ready")
+	fmt.Println("🖥️ TUI placeholder: connected to control-plane at http://" + addr)
+
+	select {}
 }
