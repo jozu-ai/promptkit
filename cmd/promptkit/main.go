@@ -6,10 +6,12 @@ import (
 	"log"
 	"os"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/promptkit/promptkit/internal/appdir"
 	"github.com/promptkit/promptkit/internal/control"
 	"github.com/promptkit/promptkit/internal/daemon"
 	"github.com/promptkit/promptkit/internal/list"
+	"github.com/promptkit/promptkit/internal/tui"
 	"github.com/promptkit/promptkit/internal/view"
 	cli "github.com/urfave/cli/v2"
 )
@@ -137,7 +139,8 @@ func uiCmd(c *cli.Context) error {
 
 	fmt.Println("🚀 Starting PromptKit control server on http://" + addr)
 	fmt.Println("✅ Control server ready")
-	fmt.Println("🖥️ TUI placeholder: connected to control-plane at http://" + addr)
 
-	select {}
+	ui := tui.New(addr)
+	p := tea.NewProgram(ui)
+	return p.Start()
 }

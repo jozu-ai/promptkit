@@ -2,11 +2,10 @@
 
 PromptKit is a developer toolkit for recording and replaying prompt sessions with LLM APIs.
 
-This repository contains a minimal prototype with a single command:
+This repository contains a minimal prototype with a CLI and a terminal UI.
 
-- `promptkit` – a CLI built with `urfave/cli/v2` that can start the daemon and will eventually manage sessions.
-
-This is only a starting point and does not implement the full feature set.
+- `promptkit` – a CLI built with `urfave/cli/v2` that can start the daemon and manage sessions.
+- `promptkit ui` – launches a Bubble Tea TUI for browsing recorded sessions.
 
 ## Running the Project
 
@@ -16,6 +15,12 @@ To run the project, use the following commands:
 
    ```bash
    go run cmd/promptkit/main.go start
+   ```
+
+2. Launch the TUI:
+
+   ```bash
+   go run cmd/promptkit/main.go ui
    ```
 
 ## Testing the Project
