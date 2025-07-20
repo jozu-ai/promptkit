@@ -4,7 +4,7 @@ PromptKit is a developer toolkit for recording and replaying prompt sessions wit
 
 This repository contains a minimal prototype with a CLI and a terminal UI.
 
-- `promptkit` – a CLI built with `urfave/cli/v2` that can start the daemon and manage sessions.
+ - `promptkit` – a CLI built with `urfave/cli/v3` that can start the daemon and manage sessions.
 - `promptkit ui` – launches a Bubble Tea TUI for browsing recorded sessions.
 
 ## Running the Project

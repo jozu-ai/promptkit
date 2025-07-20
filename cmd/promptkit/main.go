@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,11 +14,11 @@ import (
 	"github.com/promptkit/promptkit/internal/list"
 	"github.com/promptkit/promptkit/internal/tui"
 	"github.com/promptkit/promptkit/internal/view"
-	cli "github.com/urfave/cli/v2"
+	cli "github.com/urfave/cli/v3"
 )
 
 func main() {
-	app := &cli.App{
+	cmd := &cli.Command{
 		Name:  "promptkit",
 		Usage: "manage promptkit",
 		Commands: []*cli.Command{
@@ -55,18 +56,18 @@ func main() {
 		},
 	}
 
-	if err := app.Run(os.Args); err != nil {
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func startDaemon(c *cli.Context) error {
-	addr := c.String("addr")
-	backend := c.String("backend")
+func startDaemon(_ context.Context, cmd *cli.Command) error {
+	addr := cmd.String("addr")
+	backend := cmd.String("backend")
 	return daemon.Run(addr, backend)
 }
 
-func listCmd(c *cli.Context) error {
+func listCmd(_ context.Context, cmd *cli.Command) error {
 	dir, err := appdir.SessionsDir()
 	if err != nil {
 		return err
@@ -77,7 +78,7 @@ func listCmd(c *cli.Context) error {
 		return err
 	}
 
-	pred, err := list.ParseFilter(c.String("filter"))
+	pred, err := list.ParseFilter(cmd.String("filter"))
 	if err != nil {
 		return err
 	}
@@ -90,11 +91,11 @@ func listCmd(c *cli.Context) error {
 		}
 	}
 
-	if limit := c.Int("limit"); limit > 0 && limit < len(summaries) {
+	if limit := cmd.Int("limit"); limit > 0 && limit < len(summaries) {
 		summaries = summaries[:limit]
 	}
 
-	if c.String("output") == "json" {
+	if cmd.String("output") == "json" {
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		return enc.Encode(summaries)
@@ -104,11 +105,11 @@ func listCmd(c *cli.Context) error {
 	return nil
 }
 
-func viewCmd(c *cli.Context) error {
-	if c.NArg() < 1 {
+func viewCmd(_ context.Context, cmd *cli.Command) error {
+	if cmd.NArg() < 1 {
 		return cli.Exit("session id required", 1)
 	}
-	id := c.Args().First()
+	id := cmd.Args().First()
 	dir, err := appdir.SessionsDir()
 	if err != nil {
 		return err
@@ -126,7 +127,7 @@ func viewCmd(c *cli.Context) error {
 	return enc.Encode(sess)
 }
 
-func uiCmd(c *cli.Context) error {
+func uiCmd(_ context.Context, cmd *cli.Command) error {
 	addr := "localhost:5140"
 	srv, err := control.NewServer(addr)
 	if err != nil {
