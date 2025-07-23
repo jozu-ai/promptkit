@@ -46,3 +46,22 @@ To build the binaries for the project, use:
 go build -o bin/promptkit cmd/promptkit/main.go
 
 ```
+
+---
+
+## 🛠️ Need Help?
+
+If you have questions, run into issues, or just want to give feedback, we’d love to hear from you.
+
+- 📧 Email us: [support@jozu.com](mailto:support@jozu.com)  
+- 🧵 Open an issue here on GitHub  
+- 🙌 Contribute improvements, examples, or ideas — community input is always welcome!
+
+
+## 💡 Learn More About Jozu
+
+Jozu helps teams manage AI/ML governance with clarity, control, and confidence. We make it easier to ship secure, compliant, and reproducible machine learning — especially in on-prem or private cloud environments.
+
+To explore what Jozu can do, visit [jozu.com](http://jozu.com) for product details, docs, and use cases.
+
+
