@@ -1,6 +1,6 @@
-# PromptKit
+# Jozu PromptKit
 
-PromptKit is a developer toolkit for recording and replaying prompt sessions with LLM APIs.
+Jozu PromptKit is a developer toolkit for recording and replaying prompt sessions with LLM APIs.
 
 This repository contains a minimal prototype with a CLI and a terminal UI.
 
