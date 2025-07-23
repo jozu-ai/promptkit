@@ -192,7 +192,7 @@ func Summarize(s session.Session) Summary {
 	return Summary{
 		ID:        s.ID,
 		Model:     fmt.Sprint(model),
-		Origin:    s.Origin,
+		Origin:    string(s.Origin),
 		Tokens:    int(tokens),
 		LatencyMS: s.Metadata.LatencyMS,
 		Tags:      s.Metadata.Tags,

@@ -78,16 +78,19 @@ func newHandler(backend string, rec *recorder.Recorder) (http.Handler, error) {
 
 		sess := session.Session{
 			ID:           time.Now().Format("20060102150405"),
-			Origin:       "proxy",
+			Origin:       session.OriginProxy,
 			SourcePrompt: "",
-			Request: map[string]any{
-				"method":  r.Method,
-				"path":    path,
-				"payload": reqPayload,
+			Request: session.OpenAIRequest{
+				// Legacy proxy format for backward compatibility
+				Method:  r.Method,
+				Path:    path,
+				Payload: reqPayload,
+				Stream:  stream,
 			},
-			Response: map[string]any{
-				"status": resp.StatusCode,
-				"body":   respPayload,
+			Response: session.OpenAIResponse{
+				// Legacy proxy format for backward compatibility
+				Status: resp.StatusCode,
+				Body:   respPayload,
 			},
 			Stream: stream,
 			Metadata: session.Metadata{

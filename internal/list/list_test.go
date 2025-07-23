@@ -48,10 +48,14 @@ func TestFilterOperators(t *testing.T) {
 func TestSummarize(t *testing.T) {
 	pub := "oci://reg/app:1"
 	s := session.Session{
-		ID:       "1",
-		Origin:   "modelkit",
-		Request:  map[string]any{"model": "gpt"},
-		Response: map[string]any{"usage": map[string]any{"total_tokens": 5}},
+		ID:     "1",
+		Origin: session.OriginModelKit,
+		Request: session.OpenAIRequest{
+			Model: "gpt",
+		},
+		Response: session.OpenAIResponse{
+			Usage: session.UsageStats{TotalTokens: 5},
+		},
 		Metadata: session.Metadata{Timestamp: time.Now(), LatencyMS: 10, Tags: []string{"a"}, Published: &pub},
 	}
 	sum := Summarize(s)
@@ -61,7 +65,12 @@ func TestSummarize(t *testing.T) {
 }
 
 func TestToMap(t *testing.T) {
-	s := session.Session{ID: "1", Request: map[string]any{"model": "gpt"}}
+	s := session.Session{
+		ID: "1",
+		Request: session.OpenAIRequest{
+			Model: "gpt",
+		},
+	}
 	m := ToMap(s)
 	b, _ := json.Marshal(m)
 	if string(b) == "" {

@@ -74,9 +74,8 @@ func TestRecordCompletions(t *testing.T) {
 	if sess[0].Stream {
 		t.Fatalf("expected non-stream session")
 	}
-	reqMap := sess[0].Request.(map[string]any)
-	if reqMap["path"] != "/v1/completions" {
-		t.Fatalf("unexpected path: %v", reqMap["path"])
+	if sess[0].Request.Path != "/v1/completions" {
+		t.Fatalf("unexpected path: %v", sess[0].Request.Path)
 	}
 	if sess[0].Metadata.SessionHash == "" {
 		t.Fatalf("hash not set")
