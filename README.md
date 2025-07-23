@@ -1,3 +1,6 @@
+
+<img width="200"alt="Jozu Logo" src="https://github.com/user-attachments/assets/7729cb73-ed3e-4c10-bf78-39ee2611e19e" />
+
 # Jozu PromptKit
 
 Jozu PromptKit is a developer toolkit for recording and replaying prompt sessions with LLM APIs.
